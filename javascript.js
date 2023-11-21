@@ -150,7 +150,7 @@ function writeData(object) {
                         for (let j = 0; j < object.numberSubject; j++) {
                             total += tempArr[i][j];
                         }
-                        let percentage = Math.round(total / (object.totalMarks * object.numberSubject) * 100 * 100) / 100;
+                        let percentage = Math.round(total / (object.totalMarks) * 100 * 100) / 100;
                         percentArray.push(percentage);
                     }
                     console.log(percentArray);
@@ -193,7 +193,7 @@ function writeData(object) {
                             stringData += `<td>${tempArr[i][j]}</td>`;
                             total += Math.round(tempArr[i][j] * 100) / 100;
                         }
-                        let percent = Math.round(total / (object.totalMarks * object.numberSubject) * 100 * 100) / 100;
+                        let percent = Math.round(total / (object.totalMarks) * 100 * 100) / 100;
                         stringData += `<td>${total}</td><td>${percent}</td>`;
                         stringData += `<td>${calculateDivision(percent)}`;
                         stringData += `<td>${temp[i]}</td>`;
