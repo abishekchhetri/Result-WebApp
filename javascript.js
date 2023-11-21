@@ -2,7 +2,10 @@ let subject = document.getElementById('listbutton');
 let WnameArray = [];
 let MainData = [];
 let flag = 0;
+confirm("Message from (creator) Avishek Chhetri : This result app automatically creates result and lets you to print or download PDF of the result in few minutes, please enter correct information to produce correct result. Press ok to continue");
 subject.addEventListener('click', () => {
+    if(flag===1)
+    return 0;
     flag = 1;
     let name = document.getElementById('userInfo').value;
     let clz = document.getElementById('clasz').value;
@@ -86,18 +89,20 @@ function writeData(object) {
     let stinger = "";
     let rollno = 1;
 
-
+let val=0;
     document.getElementById('btn').addEventListener('click', () => {
         if (WnameArray.length > object.numberStudents)
             alert('name of all student added!');
         else {
-            if (document.getElementById('Wname').value === "" || !(/^[a-zA-Z]+$/.test(document.getElementById('Wname').value))) {
+            if (document.getElementById('Wname').value === "" || !(/^[a-zA-Z ]+$/.test(document.getElementById('Wname').value))) {
                 alert("Enter valid data!");
                 return 0;
             }
+            val++;
             WnameArray.push(document.getElementById('Wname').value);
             stinger += `${rollno++}. ${document.getElementById('Wname').value}<br>`;
             //************************************ */
+            document.getElementById('bison').innerHTML=`${object.numberStudents-val} name remaining<br>`;
             document.getElementById('boxer').innerHTML = stinger;
             document.getElementById('Wname').value = "";
             //************************************ */
@@ -108,11 +113,31 @@ function writeData(object) {
             document.getElementById('boxer').innerHTML = "";
             let string = "";
             for (let i = 0; i < object.numberSubject; i++) {
-                string += `${object.subjectList[i]} Marks<br><input type="tel" class="subjectInput" placeholder="Enter marks of ${object.subjectList[i]}"> <button class='ValidateMarks'>Validate</button><br>`;
+                string += `${object.subjectList[i]} Marks<br><div id="mainBoxMarks"><input type="tel" class="subjectInput" placeholder="Enter marks of ${object.subjectList[i]}"> <button class='ValidateMarks'>Validate</button><br><div class='dom'></div></div><br>`;
             }
-            document.getElementById('writer').innerHTML = `<p>Now enter the marks separated by - (dash) like nepali marks : 23-12-34 etc marks must be rollno wise</p>${string} <br><button id='validateAll'>Submit Marks</button><br> `;
+            document.getElementById('writer').innerHTML = `<p>Now enter the marks separated by - (dash) like nepali marks : 23-12-34 etc marks must be rollno wise</p><p>Total students : ${object.numberStudents}</p>${string} <br><button id='validateAll'>Submit Marks</button><br> `;
 
             const noButton = document.getElementsByClassName('ValidateMarks');
+            //**********************SUBJECT INPUT FIELD LIVE MARKS CHECKING******************* */
+            let subjInput = document.getElementsByClassName('subjectInput');
+            let checkList=document.getElementsByClassName('dom');
+            for(let i=0;i<subjInput.length;i++)
+            {
+                document.querySelector('body').addEventListener('input',()=>{
+                    checkList[i].innerHTML="";
+                    let keepTable=generateTable(subjInput[i].value);
+                checkList[i].innerHTML=keepTable;
+                })
+                subjInput[i].addEventListener('keydown',()=>{
+                    checkList[i].innerHTML="";
+                    let keepTable=generateTable(subjInput[i].value);
+                checkList[i].innerHTML=keepTable;
+                });
+            }
+            //******************************************************************************* */
+
+
+
             for (let i = 0; i < noButton.length; i++) {
                 noButton[i].addEventListener('click', () => {
                     console.log(`${object.subjectList[i]} is selected/clicked`);
@@ -120,9 +145,9 @@ function writeData(object) {
                     validateMarks(subj[i].value, object.numberStudents, object);
                 })
             }
-
+            document.getElementById('bison').innerHTML="";
             document.getElementById('validateAll').addEventListener('click', () => {
-                let elem = window.confirm("Are you sure you want to submit? mistakes cannot be undone.");
+                let elem = window.confirm("Have you verified marks ? Are you sure you want to submit? mistakes cannot be undone!.");
                 if (elem) {
                     let subj = document.getElementsByClassName('subjectInput')
                     for (let i = 0; i < object.numberSubject; i++) {
@@ -194,7 +219,7 @@ function writeData(object) {
                             total += Math.round(tempArr[i][j] * 100) / 100;
                         }
                         let percent = Math.round(total / (object.totalMarks) * 100 * 100) / 100;
-                        stringData += `<td>${total}</td><td>${percent}</td>`;
+                        stringData += `<td>${Math.round(total*100)/100}</td><td>${percent}</td>`;
                         stringData += `<td>${calculateDivision(percent)}`;
                         stringData += `<td>${temp[i]}</td>`;
                         stringData += `<td></td>`;
@@ -290,4 +315,42 @@ function calculateDivision(percentage) {
     } else {
         return "Fail";
     }
+}
+
+// function generateTable(textRandom) {
+//     let string = textRandom.split('-');
+//     // string.pop();
+//     let tableDat = "<table id='indTable'><tr><td>RN</td>";
+//     console.log(string);
+//     for (let i = 0; i < string.length; i++) {
+//         tableDat += `<td>${i + 1}</td>`;
+//     }
+
+//     tableDat += `</tr><tr><td>Marks</td>`;
+
+//     for (let i = 0; i < string.length; i++) {
+//         tableDat += `<td>${string[i]}</td>`;
+//     }
+
+//     tableDat += `</tr></table>`;
+//     return tableDat;
+// }
+
+
+function generateTable(textRandom) {
+    let string = textRandom.split('-'); // Filter out empty strings
+    let tableDat = "<table id='indTable'><tr><td>RN</td>";
+    console.log(string);
+    for (let i = 0; i < string.length; i++) {
+        tableDat += `<td>${i + 1}</td>`;
+    }
+
+    tableDat += `</tr><tr><td>Marks</td>`;
+
+    for (let i = 0; i < string.length; i++) {
+        tableDat += `<td>${string[i]}</td>`;
+    }
+
+    tableDat += `</tr></table>`;
+    return tableDat;
 }
